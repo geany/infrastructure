@@ -59,7 +59,6 @@ except ImportError:
 
 # hard-coded constants, adjust for environment
 LOG_FILENAME = '/var/log/git2irc.log'
-# todo: should be `/etc/git2irc.conf` ?
 CONFIG_FILENAME = '/home/geany/git2irc.conf'
 
 # global and cuts across concerns, assumed to be properly initialized later
