@@ -214,8 +214,9 @@ class CommitMailGenerator(object):
                               patch=self._get_diff_if_available(modified_file))
             diffs += EMAIL_DIFF_TEMPLATE % parameters
         # shrink diffs to at most ~ 100KB
-        diffs = diffs[:100000]
-        diffs += u'@@ Diff output truncated at 100000 characters. @@\n\n'
+        if len(diffs) > 100000:
+            diffs = diffs[:100000]
+            diffs += u'@@ Diff output truncated at 100000 characters. @@\n'
         return diffs
 
     #----------------------------------------------------------------------
