@@ -52,9 +52,9 @@ import logging
 import logging.handlers
 import socket
 try:
-    from configparser import SafeConfigParser #py3
+    from configparser import SafeConfigParser  # py3
 except ImportError:
-    from ConfigParser import SafeConfigParser #py2
+    from ConfigParser import SafeConfigParser  # py2
 
 
 # hard-coded constants, adjust for environment
@@ -62,8 +62,8 @@ LOG_FILENAME = '/var/log/git2irc.log'
 CONFIG_FILENAME = '/home/geany/git2irc.conf'
 
 # global and cuts across concerns, assumed to be properly initialized later
-logger = None # see init_logging()
-config = { 'git': {}, 'irc': {}, 'shortener': {} }   # see init_config()
+logger = None  # see init_logging()
+config = {'git': {}, 'irc': {}, 'shortener': {}}   # see init_config()
 
 
 #----------------------------------------------------------------------
@@ -71,14 +71,13 @@ def init_config(conf_filename):
     """
     Reads the configuration file into a global dictionary.
     """
-    global config # used everywhere
     try:
         conf = SafeConfigParser({
-             'git': { 'repositories': '' },
-              'irc': { 'channel': '', 'host': '', 'port': 0 },
-              'shortener': { 'url': '', 'login': '', 'key': '' } })
+                'git': {'repositories': ''},
+                'irc': {'channel': '', 'host': '', 'port': 0},
+                'shortener': {'url': '', 'login': '', 'key': ''}})
         conf.read(conf_filename)
-        config['git']['repositories'] = [itm.strip() \
+        config['git']['repositories'] = [itm.strip()
             for itm in conf.get('git', 'repositories').split(';') if itm.strip()]
         config['irc']['channel'] = conf.get('irc', 'channel')
         config['irc']['host'] = conf.get('irc', 'host')
@@ -99,7 +98,7 @@ def init_logging():
     """"
     Initializes the logging file for all to use.
     """
-    global logger # used everywhere
+    global logger  # used everywhere
     logger = logging.getLogger('git2irc')
     logger.setLevel(logging.DEBUG)
     file_handler = logging.FileHandler(LOG_FILENAME)
@@ -123,17 +122,17 @@ def shorten_url(long_url):
     """
     Uses the tiny.cc API to shorten URL's for nice IRC messages.
     """
-    req = { 'c': 'rest_api',
-            'm': 'shorten',
-            'version': '2.0.3',
-            'format': 'json',
-            'shortUrl': '',
-            'longUrl': long_url,
-            'login': config['shortener']['login'],
-            'apiKey': config['shortener']['key'] }
+    req = {'c': 'rest_api',
+           'm': 'shorten',
+           'version': '2.0.3',
+           'format': 'json',
+           'shortUrl': '',
+           'longUrl': long_url,
+           'login': config['shortener']['login'],
+           'apiKey': config['shortener']['key']}
     req_enc = urlencode(req)
     req_url = '%s?%s' % (config['shortener']['url'], req_enc)
-    short_url = long_url # default is to return same URL (ie. in case of error)
+    short_url = long_url  # default is to return same URL (ie. in case of error)
     try:
         resp_file = urlopen(req_url)
         resp_dict = loads(resp_file.read())
@@ -143,7 +142,7 @@ def shorten_url(long_url):
         else:
             logger.warn(u'Error shortening URL: %s: %s' % (
                 resp_dict['errorCode'], resp_dict['errorMessage']))
-    except Exception as e: # generally, urllib2.URLError
+    except Exception as e:  # generally, urllib2.URLError
         logger.warn(u'Exception shortening URL: %e', e, exc_info=True)
     return short_url
 
@@ -195,7 +194,7 @@ def main():
 
     json = arguments.getvalue('payload')
     content = loads(json)
-    if content.has_key('commits'):
+    if 'commits' in content:
         repo = content['repository']['name']
         if repo in config['git']['repositories']:
             handle_irc_message(repo, content)
