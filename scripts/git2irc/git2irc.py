@@ -89,7 +89,7 @@ def init_config(conf_filename):
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
     except Exception as e:
-        logger.warn(u"Exception reading config file '%s': %e", conf_filename,
+        logger.warn(u"Exception reading config file '%s': %s", conf_filename,
             e, exc_info=True)
 
 
@@ -143,7 +143,7 @@ def shorten_url(long_url):
             logger.warn(u'Error shortening URL: %s: %s' % (
                 resp_dict['errorCode'], resp_dict['errorMessage']))
     except Exception as e:  # generally, urllib2.URLError
-        logger.warn(u'Exception shortening URL: %e', e, exc_info=True)
+        logger.warn(u'Exception shortening URL: %s', e, exc_info=True)
     return short_url
 
 
