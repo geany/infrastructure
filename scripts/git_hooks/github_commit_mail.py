@@ -61,14 +61,14 @@ EMAIL_DIFF_TEMPLATE = u'''Modified: %(filename)s
 EMAIL_RECIPIENT_MAP = {
     # repository: email address
     # geany
-    'geany/geany': 'geany-commits@uvena.de',
-    'geany/talks': 'geany-commits@uvena.de',
-    'geany/infrastructure': 'geany-commits@uvena.de',
+    'geany/geany': 'commits@lists.geany.org',
+    'geany/talks': 'commits@lists.geany.org',
+    'geany/infrastructure': 'commits@lists.geany.org',
     # plugins
-    'geany/geany-plugins': 'geany-plugins-commits@uvena.de',
-    'geany/plugins.geany.org': 'geany-plugins-commits@uvena.de',
+    'geany/geany-plugins': 'plugins-commits@lists.geany.org',
+    'geany/plugins.geany.org': 'plugins-commits@lists.geany.org',
     # newsletter
-    'geany/newsletter': 'geany-newsletter-commits@uvena.de',
+    'geany/newsletter': 'newsletter-commits@lists.geany.org',
 }
 
 
