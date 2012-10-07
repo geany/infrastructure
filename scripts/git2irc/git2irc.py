@@ -85,12 +85,12 @@ def init_config(conf_filename):
         config['shortener']['url'] = conf.get('shortener', 'url')
         config['shortener']['login'] = conf.get('shortener', 'login')
         config['shortener']['key'] = conf.get('shortener', 'key')
-        logger.debug('Read configuration dict: %s' % config)
+        logger.debug(u'Read configuration dict: %s', unicode(config))
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
     except Exception as e:
         logger.warn(u"Exception reading config file '%s': %s", conf_filename,
-            e, exc_info=True)
+            unicode(e), exc_info=True)
 
 
 #----------------------------------------------------------------------
@@ -114,7 +114,7 @@ def init_logging():
         u'Error on git_post_commit')
     mail_handler.setLevel(logging.WARNING)
     logger.addHandler(mail_handler)
-    logger.debug('Logging initialized')
+    logger.debug(u'Logging initialized')
 
 
 #----------------------------------------------------------------------
@@ -138,12 +138,12 @@ def shorten_url(long_url):
         resp_dict = loads(resp_file.read())
         if int(resp_dict['errorCode']) == 0:
             short_url = resp_dict['results']['short_url']
-            logger.debug('Shortened URL: %s' % short_url)
+            logger.debug(u'Shortened URL: %s', short_url)
         else:
-            logger.warn(u'Error shortening URL: %s: %s' % (
-                resp_dict['errorCode'], resp_dict['errorMessage']))
+            logger.warn(u'Error shortening URL: %s: %s',
+                resp_dict['errorCode'], resp_dict['errorMessage'])
     except Exception as e:  # generally, urllib2.URLError
-        logger.warn(u'Exception shortening URL: %s', e, exc_info=True)
+        logger.warn(u'Exception shortening URL: %s', unicode(e), exc_info=True)
     return short_url
 
 
@@ -157,7 +157,7 @@ def send_commit(message):
     irc_bot_socket.connect((config['irc']['host'], config['irc']['port']))
     irc_bot_socket.send(irc_message.encode('utf-8'))
     irc_bot_socket.close()
-    logger.debug('Message sent to IRC: %s' % message)
+    logger.debug(u'Message sent to IRC: %s', message)
 
 
 #----------------------------------------------------------------------
@@ -168,8 +168,8 @@ def handle_irc_message(repository, content):
     try:
         branch = content['ref']
         branch = branch.rsplit('/', 1)[1]
-    except (KeyError, IndexError), rev_parse_e:
-        logger.warn(u'An error occurred at ref parsing: %s' % rev_parse_e, exc_info=True)
+    except (KeyError, IndexError) as rev_parse_e:
+        logger.warn(u'An error occurred at ref parsing: %s', unicode(rev_parse_e), exc_info=True)
         branch = 'unknown'
 
     for commit in content['commits']:
@@ -179,8 +179,8 @@ def handle_irc_message(repository, content):
         url = shorten_url(commit['url'])
         irc_line = u'[%s/%s] %s - %s (%s)' % (repository, branch, author, message, url)
         send_commit(irc_line)
-        logger.info(u"Sent message to channel '%s' for '%s' (%s)" % (
-            config['irc']['channel'], author, commit_id))
+        logger.info(u"Sent message to channel '%s' for '%s' (%s)",
+            config['irc']['channel'], author, commit_id)
 
 
 #----------------------------------------------------------------------
@@ -205,18 +205,18 @@ if __name__ == '__main__':
 
     init_logging()
 
-    logger.debug('Script started')
+    logger.debug(u'Script started')
 
     init_config(CONFIG_FILENAME)
 
     try:
         main()
-    except Exception, e:
-        logger.warn(u'An error occurred: %s' % e, exc_info=True)
+    except Exception as e:
+        logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
 
     print 'Content-type: text/html'
     print
 
-    logger.debug('Script complete')
+    logger.debug(u'Script complete')
 
     logging.shutdown()
