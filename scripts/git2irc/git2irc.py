@@ -82,9 +82,9 @@ def init_config(conf_filename):
         config['irc']['channel'] = conf.get('irc', 'channel')
         config['irc']['host'] = conf.get('irc', 'host')
         config['irc']['port'] = int(conf.get('irc', 'port'))
-        config['shortener']['url'] = config.get('shortener', 'url')
-        config['shortener']['login'] = config.get('shortener', 'login')
-        config['shortener']['key'] = config.get('shortener', 'key')
+        config['shortener']['url'] = conf.get('shortener', 'url')
+        config['shortener']['login'] = conf.get('shortener', 'login')
+        config['shortener']['key'] = conf.get('shortener', 'key')
         logger.debug('Read configuration dict: %s' % config)
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
