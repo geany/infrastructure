@@ -9,7 +9,7 @@ Github Post-Receive commit hook
 '''
 
 
-from datetime import datetime, timedelta
+from dateutil import parser as dateutil_parser
 from email.mime.text import MIMEText
 from email.Header import Header
 from email.utils import formatdate, formataddr
@@ -137,7 +137,7 @@ class CommitMailGenerator(object):
         committer_name = full_commit_info['commit']['committer']['name']
         commit_datetime = self._parse_commit_date(full_commit_info['commit']['committer']['date'])
         commit_date = mktime(commit_datetime.timetuple())
-        commit_date_formatted = commit_datetime.strftime('%a, %d %b %Y %H:%M:%S')
+        commit_date_formatted = commit_datetime.strftime('%a, %d %b %Y %H:%M:%S %Z')
         commit_message = full_commit_info['commit']['message']
         short_commit_message = self._get_short_commit_message(commit_message)
         short_hash = commit[:6]
@@ -175,24 +175,7 @@ class CommitMailGenerator(object):
 
     #----------------------------------------------------------------------
     def _parse_commit_date(self, date_raw):
-        # unfortunately, Python's strptime cannot parse numeric timezone offsets (anymore since 2.6)
-        # so we need to do it on our own, example date: 2012-01-08T04:44:21-08:00
-        date_to_parse = date_raw[:-6]
-        timezone_offset = date_raw[-6:]
-        # parse date
-        date = datetime.strptime(date_to_parse, '%Y-%m-%dT%H:%M:%S')
-        # handle timezone information
-        timezone_offset = timezone_offset.replace(':', '')
-        try:
-            offset = int(timezone_offset)
-        except ValueError:
-            self._logger.warn(
-                u'Error on parsing timezone information "%s" (%s)' % (timezone_offset, date_raw))
-            offset = 0
-
-        delta = timedelta(hours=offset / 100.0)
-        date -= delta
-        return date
+        return dateutil_parser.parse(date_raw)
 
     #----------------------------------------------------------------------
     def _get_short_commit_message(self, short_commit_message):
