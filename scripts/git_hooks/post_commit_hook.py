@@ -24,7 +24,7 @@ import logging.handlers
 
 
 LOG_FILENAME = u'/var/log/git_mirror.log'
-VALID_UPDATE_REPOSITORIES = ('geany', 'geany-plugins', 'infrastructure', 'newsletter', 'talks')
+VALID_UPDATE_REPOSITORIES = ('geany', 'geany-plugins', 'infrastructure', 'newsletter', 'talks', 'geany-themes')
 REPOSITORY_BASE_PATH = u'/srv/www/git.geany.org/repos/%s.git'
 UPDATE_LOCK_FILE = u'%s/.update_lock'
 UPDATE_NOTIFY_FILE = u'%s/.update_required'
