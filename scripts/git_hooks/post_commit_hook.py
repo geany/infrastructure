@@ -110,8 +110,6 @@ def main():
     json = arguments.getvalue('payload')
     content = loads(json)
     if 'commits' in content:
-        from pprint import pformat
-        logger.info(pformat(content))
         repo = content['repository']['name']
 
         if repo in VALID_UPDATE_REPOSITORIES:
