@@ -58,8 +58,10 @@ except ImportError:
 
 
 # hard-coded constants, adjust for environment
-LOG_FILENAME = '/var/log/git2irc.log'
 CONFIG_FILENAME = '/home/geany/git2irc.conf'
+LOG_FILENAME = '/var/log/git2irc.log'
+# extend on demand
+LOG_EMAIL_ADDRESSES = ['enrico@geany.org']
 
 # global and cuts across concerns, assumed to be properly initialized later
 logger = None  # see init_logging()
@@ -110,7 +112,7 @@ def init_logging():
     mail_handler = logging.handlers.SMTPHandler(
         u'localhost',
         u'git-noreply@geany.org',
-        [u'enrico.troeger@uvena.de'],
+        LOG_EMAIL_ADDRESSES,
         u'Error on git_post_commit')
     mail_handler.setLevel(logging.WARNING)
     logger.addHandler(mail_handler)
