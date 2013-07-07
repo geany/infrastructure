@@ -2,7 +2,7 @@ Geany Infrastructure Scripts
 ============================
 
 
-The scripts in this repository are used for some purposes on geany.org.
+The scripts in this repository are used for various purposes on geany.org.
 
 Basically they provide some additional and cool functions like announcing
 GIT commits to the IRC channel, maintain the GIT mirror repository and similar tasks.
@@ -52,3 +52,13 @@ If you want to add or remove a repository maintained by these scripts, follow th
 
   * Open http://git.geany.org/ in your browser and check whether the new repository is visible
     and has files.
+
+
+IRC Bot Plugins
+===============
+
+In the directory ircbot-plugins there are two plugins for the IRC bot Supybot
+(http://www.supybot.org/).
+
+The plugins enhance the used Supybot instance on #geany by various useful and funny
+features like a bunch of !commands. For details, read the source code.
