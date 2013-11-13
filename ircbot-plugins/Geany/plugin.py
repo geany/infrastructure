@@ -268,6 +268,19 @@ class Geany(callbacks.Plugin):
         else:
             irc.reply('I have Super Cow Powers. Have you mooed today?')
 
+    def commit(self, irc, msg, args, idx):
+        """takes one argument, a Git ID SHA
+
+        Type '!commit <SHA-ID-HERE>' to print a URL/link to view the commit
+        in Geany's online Git repository browser.
+        """
+        idx = str(idx).lower().strip()
+        if all(ch in 'abcdef0123456789' for ch in idx):
+            irc.reply('https://github.com/geany/geany/commit/' + idx)
+            # using Github since it allows shortened SHAs also
+            #irc.reply('http://git.geany.org/geany/commit/?id=' + idx)
+        else:
+            irc.reply('Malformed Git SHA')
 
     # "decorate" our commands (wrap is a decorator replacement for old Python versions)
     tea = wrap(goodie, [ optional(many('text')) ])
@@ -297,6 +310,7 @@ class Geany(callbacks.Plugin):
 
     test = wrap(test, [ optional(many('text')) ])
     moo = wrap(moo)
+    commit = wrap(commit, [ 'text' ])
 
 
 
