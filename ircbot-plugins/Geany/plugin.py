@@ -35,10 +35,7 @@ import random
 import threading
 from ConfigParser import SafeConfigParser
 
-import supybot.utils as utils
 from supybot.commands import *
-import supybot.ircmsgs as ircmsgs
-import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 import supybot.conf as conf
@@ -56,7 +53,7 @@ GOODIES = {
     'milk': 'A nice sexy waitress brings %s a glass of fresh, cold milk',
     'chocolate': 'A nice sexy waitress brings %s a piece of sweet chocolate',
     'pizza': 'Someone calls Mario, and he brings %s a tasty hawaiian pizza!'
-};
+}
 
 
 class Geany(callbacks.Plugin):
@@ -88,7 +85,8 @@ class Geany(callbacks.Plugin):
         f.close()
 
     def _write_user_list(self, irc):
-        exclude_nicks = [ 'ChanServ', self._get_nick_name() ]
+        exclude_nicks = ['ChanServ', self._get_nick_name()]
+
         def filter_services(value):
             return value not in exclude_nicks
 
@@ -191,7 +189,6 @@ class Geany(callbacks.Plugin):
 
         Greetings
         """
-        cmd = self._get_command_name(msg, 'hi')
         text = 'Hi %s. My name is %s and I\'m here to offer additional services to you! Try \"?? help\" for general information.' % (msg.nick, self._get_nick_name())
         irc.reply(text)
 
@@ -200,7 +197,6 @@ class Geany(callbacks.Plugin):
 
         Thanks
         """
-        cmd = self._get_command_name(msg, 'thanks')
         text = '%s, no problem. It was a pleasure to serve you.' % (msg.nick)
         irc.reply(text)
 
@@ -284,35 +280,33 @@ class Geany(callbacks.Plugin):
             irc.reply('Malformed Git SHA')
 
     # "decorate" our commands (wrap is a decorator replacement for old Python versions)
-    tea = wrap(goodie, [ optional(many('text')) ])
-    coffee = wrap(goodie, [ optional(many('text')) ])
-    coke = wrap(goodie, [ optional(many('text')) ])
-    pepsi = wrap(goodie, [ optional(many('text')) ])
-    juice = wrap(goodie, [ optional(many('text')) ])
-    vodka = wrap(goodie, [ optional(many('text')) ])
-    beer = wrap(goodie, [ optional(many('text')) ])
-    pizza = wrap(goodie, [ optional(many('text')) ])
-    chocolate = wrap(goodie, [ optional(many('text')) ])
-    milk = wrap(goodie, [ optional(many('text')) ])
-    goodies = wrap(listgoodies, [ optional(many('text')) ])
-    goods = wrap(listgoodies, [ optional(many('text')) ])
+    tea = wrap(goodie, [optional(many('text'))])
+    coffee = wrap(goodie, [optional(many('text'))])
+    coke = wrap(goodie, [optional(many('text'))])
+    pepsi = wrap(goodie, [optional(many('text'))])
+    juice = wrap(goodie, [optional(many('text'))])
+    vodka = wrap(goodie, [optional(many('text'))])
+    beer = wrap(goodie, [optional(many('text'))])
+    pizza = wrap(goodie, [optional(many('text'))])
+    chocolate = wrap(goodie, [optional(many('text'))])
+    milk = wrap(goodie, [optional(many('text'))])
+    goodies = wrap(listgoodies, [optional(many('text'))])
+    goods = wrap(listgoodies, [optional(many('text'))])
 
+    hi = wrap(hello, [optional(many('text'))])
+    hello = wrap(hello, [optional(many('text'))])
+    hey = wrap(hello, [optional(many('text'))])
 
-    hi = wrap(hello, [ optional(many('text')) ])
-    hello = wrap(hello, [ optional(many('text')) ])
-    hey = wrap(hello, [ optional(many('text')) ])
+    thanks = wrap(thanks, [optional(many('text'))])
+    thankyou = wrap(thanks, [optional(many('text'))])
+    thx = wrap(thanks, [optional(many('text'))])
 
-    thanks = wrap(thanks, [ optional(many('text')) ])
-    thankyou = wrap(thanks, [ optional(many('text')) ])
-    thx = wrap(thanks, [ optional(many('text')) ])
+    learn = wrap(learn, ['something', 'text'])
+    alias = wrap(alias, ['something', 'something'])
 
-    learn = wrap(learn, [ 'something', 'text' ])
-    alias = wrap(alias, [ 'something', 'something' ])
-
-    test = wrap(test, [ optional(many('text')) ])
+    test = wrap(test, [optional(many('text'))])
     moo = wrap(moo)
-    commit = wrap(commit, [ 'text' ])
-
+    commit = wrap(commit, ['text'])
 
 
 Class = Geany
