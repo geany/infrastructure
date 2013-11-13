@@ -44,6 +44,7 @@ import supybot.callbacks as callbacks
 import supybot.conf as conf
 
 
+IRC_USERLIST_FILEPATH = '/var/tmp/irc_userlist'
 GOODIES = {
     'coffee': 'A nice sexy waitress brings %s a big cup of coffee!',
     'coke': 'A nice sexy waitress brings %s a cool bottle of coke!',
@@ -103,7 +104,7 @@ class Geany(callbacks.Plugin):
             # filter myself and ChanServ
             users = filter(filter_services, channel_users)
 
-            f = open('/srv/www/irc.geany.org/irc_userlist', 'w')
+            f = open(IRC_USERLIST_FILEPATH, 'w')
             f.write('\n'.join(users))
             f.close()
 
