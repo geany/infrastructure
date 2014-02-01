@@ -46,7 +46,7 @@ error. No smart checking is performed.
 
 from cgi import FieldStorage
 from json import loads
-from urllib2 import urlopen
+from urllib2 import urlopen, Request
 from urllib import urlencode
 import logging
 import logging.handlers
@@ -62,6 +62,9 @@ CONFIG_FILENAME = '/home/geany/git2irc.conf'
 LOG_FILENAME = '/var/log/git2irc.log'
 # extend on demand
 LOG_EMAIL_ADDRESSES = ['enrico@geany.org']
+
+# user-agent to be used for requests to tiny.cc
+USER_AGENT = u'git2irc.py - https://raw.github.com/geany/infrastructure/master/scripts/git2irc/git2irc.py'
 
 # global and cuts across concerns, assumed to be properly initialized later
 logger = None  # see init_logging()
@@ -135,8 +138,9 @@ def shorten_url(long_url):
     req_enc = urlencode(req)
     req_url = '%s?%s' % (config['shortener']['url'], req_enc)
     short_url = long_url  # default is to return same URL (ie. in case of error)
+    request = Request(req_url, headers={"User-Agent": USER_AGENT})
     try:
-        resp_file = urlopen(req_url)
+        resp_file = urlopen(request)
         resp_dict = loads(resp_file.read())
         if int(resp_dict['errorCode']) == 0:
             short_url = resp_dict['results']['short_url']
