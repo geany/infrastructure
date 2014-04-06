@@ -66,10 +66,10 @@ def main():
         handle_repository_update(repository)
 
 
-logger = setup_logging()
-try:
-    main()
-except Exception, e:
-    logger.warn(u'An error occurred: %s' % e, exc_info=True)
-
-logging.shutdown()
+if __name__ == '__main__':
+    logger = setup_logging()
+    try:
+        main()
+    except Exception, e:
+        logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
+    logging.shutdown()

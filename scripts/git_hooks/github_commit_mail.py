@@ -274,7 +274,7 @@ def main():
     except CommandLineArgumentError, e:
         print >> sys.stderr, e
     except Exception, e:
-        logger.warn(u'An error occurred: %s' % e, exc_info=True)
+        logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
     logging.shutdown()
 
 

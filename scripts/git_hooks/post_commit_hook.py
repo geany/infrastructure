@@ -59,7 +59,7 @@ def handle_repository_update(repository):
         update_notify = open(update_notify_path, 'w')
         update_notify.write('1')
         update_notify.close()
-        logger.info(u'Not updating repository %s because it is locked, leaving a notify' % repository)
+        logger.warn(u'Not updating repository %s because it is locked, leaving a notify', repository)
     else:
         lock_file = open(lock_file_path, 'w')
         update_repository(repository, repository_path, logger)
@@ -101,7 +101,7 @@ logger = setup_logging()
 try:
     main()
 except Exception, e:
-    logger.warn(u'An error occurred: %s' % e, exc_info=True)
+    logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
 
 
 print 'Content-type: text/html'
