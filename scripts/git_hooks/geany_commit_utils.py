@@ -41,7 +41,8 @@ def run_command(repository_path, command, redirect_stdout=None, run_as=None, log
     if stderr:
         output = u'%s\nStderr:\n%s' % (output, stderr)
     if logger:
-        logger.debug(u'Command "%s": %s' % (' '.join(command), output))
+        exit_code = process.returncode
+        logger.debug(u'Command "%s" exited with code %s: %s' % (' '.join(command), exit_code, output))
 
 
 #----------------------------------------------------------------------
