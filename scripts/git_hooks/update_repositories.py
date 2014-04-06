@@ -20,8 +20,8 @@ import logging
 
 LOG_FILENAME = u'/var/log/git_mirror.log'
 REPOSITORY_BASE_PATH = u'/srv/www/git.geany.org/repos/'
-UPDATE_LOCK_FILE = u'%s/.update_lock'
-UPDATE_NOTIFY_FILE = u'%s/.update_required'
+UPDATE_LOCK_FILE = u'%s/_geany/.update_lock'
+UPDATE_NOTIFY_FILE = u'%s/_geany/.update_required'
 
 
 #----------------------------------------------------------------------

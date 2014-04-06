@@ -26,7 +26,7 @@ def setup_file_logging(name, logfile):
 
 
 #----------------------------------------------------------------------
-def run_command(repository_path, command, run_as=None, logger=None):
+def run_command(repository_path, command, redirect_stdout=None, run_as=None, logger=None):
     if run_as:
         command = ('sudo', '-u', run_as) + command
     process = Popen(command, cwd=repository_path, stdout=PIPE, stderr=PIPE)
@@ -34,6 +34,10 @@ def run_command(repository_path, command, run_as=None, logger=None):
     output = u''
     if stdout:
         output = u'%s\nStdout:\n%s' % (output, stdout)
+        if redirect_stdout:
+            target_file = open(redirect_stdout, 'w')
+            target_file.write(stdout)
+            target_file.close()
     if stderr:
         output = u'%s\nStderr:\n%s' % (output, stderr)
     if logger:
@@ -45,3 +49,7 @@ def update_repository(repository, repository_path, logger, run_as=None):
     logger.info(u'Updating repository %s' % repository)
     run_command(repository_path, ('git', 'remote', 'update'), run_as=run_as, logger=logger)
     run_command(repository_path, ('git', 'update-server-info'), run_as=run_as, logger=logger)
+    run_command(repository_path,
+                ('git', 'log', '--max-count=1', '--format="%cd"', '--date=local'),
+                redirect_stdout='%s/_geany/cgit_age' % repository_path,
+                logger=logger)
