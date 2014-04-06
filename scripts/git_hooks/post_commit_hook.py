@@ -14,10 +14,10 @@ This script actually does two things:
 
 
 from cgi import FieldStorage
+from geany_commit_utils import setup_file_logging, update_repository
 from json import loads
 from os import unlink
 from os.path import exists
-from subprocess import Popen, PIPE
 import github_commit_mail
 import logging
 import logging.handlers
@@ -34,13 +34,7 @@ LOG_EMAIL_ADDRESSES = ['enrico@geany.org']
 
 #----------------------------------------------------------------------
 def setup_logging():
-    logger = logging.getLogger('post_commit_hook')
-    logger.setLevel(logging.DEBUG)
-    file_handler = logging.FileHandler(LOG_FILENAME)
-    file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s %(name)s: %(levelname)s: %(message)s')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    logger = setup_file_logging('post_commit_hook', LOG_FILENAME)
     # mail
     mail_handler = logging.handlers.SMTPHandler(
         u'localhost',
@@ -68,10 +62,7 @@ def handle_repository_update(repository):
         logger.info(u'Not updating repository %s because it is locked, leaving a notify' % repository)
     else:
         lock_file = open(lock_file_path, 'w')
-        # update the repository
-        logger.info(u'Updating repository %s' % repository)
-        run_command(repository_path, ('git', 'remote', 'update'))
-        run_command(repository_path, ('git', 'update-server-info'))
+        update_repository(repository, repository_path, logger)
         # remove lockfile
         lock_file.close()
         unlink(lock_file_path)
@@ -88,18 +79,6 @@ def process_commit_mails(content):
 
     generator = github_commit_mail.CommitMailGenerator(user, repository, branch, commits, logger)
     generator.generate_commit_mails()
-
-
-#----------------------------------------------------------------------
-def run_command(repository_path, command):
-    process = Popen(command, cwd=repository_path, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = process.communicate()
-    output = u''
-    if stdout:
-        output = u'%s\nStdout:\n%s' % (output, stdout)
-    if stderr:
-        output = u'%s\nStderr:\n%s' % (output, stderr)
-    logger.debug(u'Command "%s": %s' % (' '.join(command), output))
 
 
 #----------------------------------------------------------------------

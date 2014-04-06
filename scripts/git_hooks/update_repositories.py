@@ -12,10 +12,9 @@ to update all of the Geany GIT Github mirror repositories which were marked by t
 post_commit_hook script to be out-of-date.
 '''
 
-
+from geany_commit_utils import setup_file_logging, update_repository
 from os import listdir, unlink
 from os.path import exists, join
-from subprocess import Popen, PIPE
 import logging
 
 
@@ -27,18 +26,12 @@ UPDATE_NOTIFY_FILE = u'%s/.update_required'
 
 #----------------------------------------------------------------------
 def setup_logging():
-    logger = logging.getLogger('update_repositories')
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    logger = setup_file_logging('update_repositories', LOG_FILENAME)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s %(name)s: %(levelname)s: %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    fh = logging.FileHandler(LOG_FILENAME)
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s %(name)s: %(levelname)s: %(message)s')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
     return logger
 
@@ -57,28 +50,13 @@ def handle_repository_update(repository):
         need_update = update_notify_file.read() == '1'
         if need_update:
             lock_file = open(lock_file_path, 'w')
-            # update the repository
-            logger.info(u'Updating repository %s' % repository)
-            run_command(repository_path, ('sudo', '-u', 'www-data', 'git', 'remote', 'update'))
-            run_command(repository_path, ('sudo', '-u', 'www-data', 'git', 'update-server-info'))
+            update_repository(repository, repository_path, logger, run_as='www-data')
             # remove lockfile
             lock_file.close()
             unlink(lock_file_path)
             # unmark update notify
             update_notify_file.truncate(0)
             update_notify_file.close()
-
-
-#----------------------------------------------------------------------
-def run_command(repository_path, command):
-    process = Popen(command, cwd=repository_path, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = process.communicate()
-    output = u''
-    if stdout:
-        output = u'%s\nStdout:\n%s' % (output, stdout)
-    if stderr:
-        output = u'%s\nStderr:\n%s' % (output, stderr)
-    logger.debug(u'Command "%s": %s' % (' '.join(command), output))
 
 
 #----------------------------------------------------------------------
