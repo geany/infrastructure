@@ -51,7 +51,7 @@ Modified Paths:
 This E-Mail was brought to you by github_commit_mail.py (Source: https://github.com/geany/infrastructure).
 '''
 EMAIL_DIFF_TEMPLATE = u'''Modified: %(filename)s
-%(changes)s files changed, %(additions)s insertions(+), %(deletions)s deletions(-)
+%(changes)s lines changed, %(additions)s insertions(+), %(deletions)s deletions(-)
 ===================================================================
 %(patch)s
 
