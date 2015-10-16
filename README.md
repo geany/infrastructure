@@ -34,13 +34,16 @@ If you want to add or remove a repository maintained by these scripts, follow th
         cd /srv/www/git.geany.org/repos/
         git init --bare geany-themes.git
         cp /srv/www/git.geany.org/repos/geany.git/config /srv/www/git.geany.org/repos/geany-themes.git/
-        touch /srv/www/git.geany.org/repos/geany-themes.git/.update_required
+        mkdir /srv/www/git.geany.org/repos/geany-themes.git/_geany
+        chmod 775 /srv/www/git.geany.org/repos/geany-themes.git/_geany
+        chown geany:www-data /srv/www/git.geany.org/repos/geany-themes.git/_geany
+        touch /srv/www/git.geany.org/repos/geany-themes.git/_geany/.update_required
         ln -s /srv/www/git.geany.org/repos/geany-themes.git/ /srv/www/git.geany.org/git/geany-themes
         chown -R www-data:www-data /srv/www/git.geany.org/repos/geany-themes.git
         chown www-data:geany /srv/www/git.geany.org/repos/geany-themes.git
         chmod 775 /srv/www/git.geany.org/repos/geany-themes.git
-        chown www-data:geany /srv/www/git.geany.org/repos/geany-themes.git/.update_required
-        chmod 664 /srv/www/git.geany.org/repos/geany-themes.git/.update_required
+        chown geany:www-data /srv/www/git.geany.org/repos/geany-themes.git/_geany/.update_required
+        chmod 664 /srv/www/git.geany.org/repos/geany-themes.git/_geany/.update_required
 
   * Edit /srv/www/git.geany.org/repos/geany-themes.git/config and adjust remote URL
 
