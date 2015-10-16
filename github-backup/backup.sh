@@ -18,5 +18,5 @@
     --labels \
     --organization \
     --milestones \
-    --output-directory=/home/geany/github-backup
+    --output-directory=/home/geany/github-backup \
     geany
