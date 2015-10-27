@@ -16,6 +16,7 @@
     --pull-commits \
     --wikis \
     --labels \
+    --hooks \
     --organization \
     --milestones \
     --output-directory=/home/geany/github-backup \
