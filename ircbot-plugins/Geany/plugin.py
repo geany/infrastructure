@@ -43,15 +43,15 @@ import supybot.conf as conf
 
 IRC_USERLIST_FILEPATH = '/srv/tmp/irc_userlist'
 GOODIES = {
-    'coffee': 'A nice sexy waitress brings %s a big cup of coffee!',
-    'coke': 'A nice sexy waitress brings %s a cool bottle of coke!',
-    'pepsi': 'A nice sexy waitress brings %s a cool bottle of Pepsi!',
-    'juice': 'A nice sexy waitress brings %s a glass of fresh juice!',
-    'vodka': 'A nice sexy waitress brings %s a shot glass of vodka!',
-    'beer': 'A nice sexy waitress brings %s a nice bottle of beer!',
-    'tea': 'A nice sexy waitress brings %s a cup of hot tea!',
-    'milk': 'A nice sexy waitress brings %s a glass of fresh, cold milk',
-    'chocolate': 'A nice sexy waitress brings %s a piece of sweet chocolate',
+    'coffee': 'A nice waiter brings %s a big cup of coffee!',
+    'coke': 'A nice waiter brings %s a cool bottle of coke!',
+    'pepsi': 'A nice waiter brings %s a cool bottle of Pepsi!',
+    'juice': 'A nice waiter brings %s a glass of fresh juice!',
+    'vodka': 'A nice waiter brings %s a shot glass of vodka!',
+    'beer': 'A nice waiter brings %s a nice bottle of beer!',
+    'tea': 'A nice waiter brings %s a cup of hot tea!',
+    'milk': 'A nice waiter brings %s a glass of fresh, cold milk',
+    'chocolate': 'A nice waiter brings %s a piece of sweet chocolate',
     'pizza': 'Someone calls Mario, and he brings %s a tasty hawaiian pizza!'
 }
 
@@ -181,7 +181,7 @@ class Geany(callbacks.Plugin):
         """
         available_goodies = sorted(GOODIES.keys())
         available_goodies = ', '.join(available_goodies)
-        text = 'A nice sexy waitress offers the following goodies for you: %s' % available_goodies
+        text = 'A nice waiter offers the following goodies for you: %s' % available_goodies
         irc.reply(text)
 
     def hello(self, irc, msg, args, text):
