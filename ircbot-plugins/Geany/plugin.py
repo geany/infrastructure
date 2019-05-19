@@ -41,7 +41,7 @@ import supybot.callbacks as callbacks
 import supybot.conf as conf
 
 
-IRC_USERLIST_FILEPATH = '/var/tmp/irc_userlist'
+IRC_USERLIST_FILEPATH = '/srv/tmp/irc_userlist'
 GOODIES = {
     'coffee': 'A nice sexy waitress brings %s a big cup of coffee!',
     'coke': 'A nice sexy waitress brings %s a cool bottle of coke!',
