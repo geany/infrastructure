@@ -1,5 +1,8 @@
 #!/bin/bash
-
+#
+# Author:  Enrico Tröger
+# License: GPLv2
+#
 # Geany GIT mirror repository cleaner (executed once a week as cronjob)
 
 

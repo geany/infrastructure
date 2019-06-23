@@ -1,5 +1,8 @@
 #!/bin/sh
-
+#
+# Author:  Enrico Tröger
+# License: GPLv2
+#
 # initial setup of the Python virtualenv for github-backup (github.com/josegonzalez/python-github-backup)
 # or just update it if it already exists
 

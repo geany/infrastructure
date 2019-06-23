@@ -65,3 +65,9 @@ In the directory ircbot-plugins there are two plugins for the IRC bot Supybot
 
 The plugins enhance the used Supybot instance on #geany by various useful and funny
 features like a bunch of !commands. For details, read the source code.
+
+
+License
+===============
+Unless stated otherwise all code in this repository is licensed of under the terms
+of the GNU General Public License version 2 (see COPYING in this repository).
