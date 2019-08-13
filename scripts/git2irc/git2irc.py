@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # git2irc.py - Notify the Geany IRC channel of Git commits
@@ -45,16 +45,12 @@ error. No smart checking is performed.
 '''
 
 from cgi import FieldStorage
+from configparser import SafeConfigParser  # py3
 from json import dumps, loads
-from urllib2 import urlopen, Request
-from urllib import urlencode
+from urllib.request import Request, urlopen
 import logging
 import logging.handlers
 import socket
-try:
-    from configparser import SafeConfigParser  # py3
-except ImportError:
-    from ConfigParser import SafeConfigParser  # py2
 
 
 # hard-coded constants, adjust for environment
@@ -64,41 +60,45 @@ LOG_FILENAME = '/var/log/git2irc.log'
 LOG_EMAIL_ADDRESSES = ['enrico@geany.org']
 
 # user-agent to be used for requests to tiny.cc
-USER_AGENT = u'git2irc.py - https://raw.github.com/geany/infrastructure/master/scripts/git2irc/git2irc.py'
+USER_AGENT = 'git2irc.py - https://raw.github.com/geany/infrastructure/master/scripts/git2irc/git2irc.py'
 
 # global and cuts across concerns, assumed to be properly initialized later
 logger = None  # see init_logging()
 config = {'git': {}, 'irc': {}, 'shortener': {}}   # see init_config()
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def init_config(conf_filename):
     """
     Reads the configuration file into a global dictionary.
     """
     try:
         conf = SafeConfigParser({
-                'git': {'repositories': ''},
-                'irc': {'channel': '', 'host': '', 'port': 0},
-                'shortener': {'url': '', 'login': '', 'key': ''}})
+            'git': {'repositories': ''},
+            'irc': {'channel': '', 'host': '', 'port': 0},
+            'shortener': {'url': '', 'login': '', 'key': ''}})
         conf.read(conf_filename)
-        config['git']['repositories'] = [itm.strip()
-            for itm in conf.get('git', 'repositories').split(';') if itm.strip()]
+        config['git']['repositories'] = [
+            itm.strip()
+            for itm
+            in conf.get('git', 'repositories').split(';')
+            if itm.strip()]
         config['irc']['channel'] = conf.get('irc', 'channel')
         config['irc']['host'] = conf.get('irc', 'host')
         config['irc']['port'] = int(conf.get('irc', 'port'))
         config['shortener']['url'] = conf.get('shortener', 'url')
         config['shortener']['username'] = conf.get('shortener', 'username')
         config['shortener']['password'] = conf.get('shortener', 'password')
-        logger.debug(u'Read configuration dict: %s', unicode(config))
+        logger.debug('Read configuration dict: {}'.format(str(config)))
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
     except Exception as e:
-        logger.warn(u"Exception reading config file '%s': %s", conf_filename,
-            unicode(e), exc_info=True)
+        logger.warning(
+            "Exception reading config file '{}': {}".format(conf_filename, str(e)),
+            exc_info=True)
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def init_logging():
     """"
     Initializes the logging file for all to use.
@@ -113,16 +113,16 @@ def init_logging():
     logger.addHandler(file_handler)
     # mail
     mail_handler = logging.handlers.SMTPHandler(
-        u'localhost',
-        u'git-noreply@geany.org',
+        'localhost',
+        'git-noreply@geany.org',
         LOG_EMAIL_ADDRESSES,
-        u'Error on git_post_commit')
+        'Error on git_post_commit')
     mail_handler.setLevel(logging.WARNING)
     logger.addHandler(mail_handler)
-    logger.debug(u'Logging initialized')
+    logger.debug('Logging initialized')
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def shorten_url(long_url):
     """
     Uses the geany.org/s/ API to shorten URL's for nice IRC messages.
@@ -133,8 +133,8 @@ def shorten_url(long_url):
             "password": config['shortener']['password']
         },
         "url": {
-                "fullUrl": long_url
-            }
+            "fullUrl": long_url
+        }
     })
     request_url = config['shortener']['url']
     short_url = long_url  # default is to return same URL (ie. in case of error)
@@ -144,40 +144,42 @@ def shorten_url(long_url):
         resp_dict = loads(resp_file.read())
         if int(resp_dict['statusCode']) == 200:
             short_url = resp_dict['url']['shortUrl']
-            logger.debug(u'Shortened URL: %s', short_url)
+            logger.debug('Shortened URL: {}'.format(short_url))
         else:
-            logger.warn(u'Error shortening URL: %s: %s',
-                resp_dict['statusCode'], resp_dict['errorMessage'])
+            logger.warning(
+                'Error shortening URL: {}: {}'.format(
+                    resp_dict['statusCode'],
+                    resp_dict['errorMessage']))
     except Exception as exc:  # generally, urllib2.URLError
         # read JSON response but just give up if there is no JSON in the response
         # and log only the raw error
         try:
             response = exc.read()
             reponse_data = loads(response)
-            logger.warn(
-                u'Error shortening URL: %s: %s',
-                reponse_data['statusCode'],
-                reponse_data['errorMessage'])
+            logger.warning(
+                'Error shortening URL: {}: {}'.format(
+                    reponse_data['statusCode'],
+                    reponse_data['errorMessage']))
         except Exception:
-            logger.warn(u'Exception shortening URL: %s', unicode(exc), exc_info=True)
+            logger.warning('Exception shortening URL: {}'.format(str(exc)), exc_info=True)
 
     return short_url
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def send_commit(message):
     """
     Dumps the message to IRC via SweetGeany.
     """
-    irc_message = u'Freenode %s %s' % (config['irc']['channel'], message)
+    irc_message = 'Freenode {} {}'.format(config['irc']['channel'], message)
     irc_bot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     irc_bot_socket.connect((config['irc']['host'], config['irc']['port']))
     irc_bot_socket.send(irc_message.encode('utf-8'))
     irc_bot_socket.close()
-    logger.debug(u'Message sent to IRC: %s', message)
+    logger.debug('Message sent to IRC: {}'.format(message))
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def handle_irc_message(repository, content):
     """
     Processes the post-commit-hook from Github.com web hooks.
@@ -186,7 +188,7 @@ def handle_irc_message(repository, content):
         branch = content['ref']
         branch = branch.rsplit('/', 1)[1]
     except (KeyError, IndexError) as rev_parse_e:
-        logger.warn(u'An error occurred at ref parsing: %s', unicode(rev_parse_e), exc_info=True)
+        logger.warning('An error occurred at ref parsing: {}'.format(rev_parse_e), exc_info=True)
         branch = 'unknown'
 
     for commit in content['commits']:
@@ -194,13 +196,16 @@ def handle_irc_message(repository, content):
         commit_id = commit['id']
         message = commit['message'].splitlines()[0]
         url = shorten_url(commit['url'])
-        irc_line = u'[%s/%s] %s - %s (%s)' % (repository, branch, author, message, url)
+        irc_line = '[{}/{}] {} - {} ({})'.format(repository, branch, author, message, url)
         send_commit(irc_line)
-        logger.info(u"Sent message to channel '%s' for '%s' (%s)",
-            config['irc']['channel'], author, commit_id)
+        logger.info(
+            "Sent message to channel '{}' for '{}' ({})".format(
+                config['irc']['channel'],
+                author,
+                commit_id))
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 def main():
     """
     Script entry-point, reads from github.com request and processes the
@@ -217,23 +222,19 @@ def main():
             handle_irc_message(repo, content)
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 if __name__ == '__main__':
-
     init_logging()
-
-    logger.debug(u'Script started')
-
+    logger.debug('Script started')
     init_config(CONFIG_FILENAME)
 
     try:
         main()
     except Exception as e:
-        logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
+        logger.warning('An error occurred: {}'.format(e), exc_info=True)
 
-    print 'Content-type: text/html'
-    print
+    print('Content-type: text/html')
+    print()
 
-    logger.debug(u'Script complete')
-
+    logger.debug('Script complete')
     logging.shutdown()
