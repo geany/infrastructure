@@ -45,7 +45,8 @@ error. No smart checking is performed.
 '''
 
 from cgi import FieldStorage
-from configparser import SafeConfigParser  # py3
+from configparser import SafeConfigParser
+from copy import deepcopy
 from json import dumps, loads
 from urllib.request import Request, urlopen
 import logging
@@ -89,7 +90,11 @@ def init_config(conf_filename):
         config['shortener']['url'] = conf.get('shortener', 'url')
         config['shortener']['username'] = conf.get('shortener', 'username')
         config['shortener']['password'] = conf.get('shortener', 'password')
-        logger.debug('Read configuration dict: {}'.format(str(config)))
+
+        # copy config and replace password before logging
+        config_for_logging = deepcopy(config)
+        config_for_logging['shortener']['password'] = '*******'
+        logger.debug('Read configuration dict: {}'.format(str(config_for_logging)))
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
     except Exception as e:
