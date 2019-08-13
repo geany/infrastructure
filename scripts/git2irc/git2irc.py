@@ -45,7 +45,7 @@ error. No smart checking is performed.
 '''
 
 from cgi import FieldStorage
-from json import loads
+from json import dumps, loads
 from urllib2 import urlopen, Request
 from urllib import urlencode
 import logging
@@ -88,8 +88,8 @@ def init_config(conf_filename):
         config['irc']['host'] = conf.get('irc', 'host')
         config['irc']['port'] = int(conf.get('irc', 'port'))
         config['shortener']['url'] = conf.get('shortener', 'url')
-        config['shortener']['login'] = conf.get('shortener', 'login')
-        config['shortener']['key'] = conf.get('shortener', 'key')
+        config['shortener']['username'] = conf.get('shortener', 'username')
+        config['shortener']['password'] = conf.get('shortener', 'password')
         logger.debug(u'Read configuration dict: %s', unicode(config))
     # catch-all: will be for invalid config file/section/option, unknown
     # filename, etc
@@ -125,31 +125,42 @@ def init_logging():
 #----------------------------------------------------------------------
 def shorten_url(long_url):
     """
-    Uses the tiny.cc API to shorten URL's for nice IRC messages.
+    Uses the geany.org/s/ API to shorten URL's for nice IRC messages.
     """
-    req = {'c': 'rest_api',
-           'm': 'shorten',
-           'version': '2.0.3',
-           'format': 'json',
-           'shortUrl': '',
-           'longUrl': long_url,
-           'login': config['shortener']['login'],
-           'apiKey': config['shortener']['key']}
-    req_enc = urlencode(req)
-    req_url = '%s?%s' % (config['shortener']['url'], req_enc)
+    request_data = dumps({
+        "auth": {
+            "username": config['shortener']['username'],
+            "password": config['shortener']['password']
+        },
+        "url": {
+                "fullUrl": long_url
+            }
+    })
+    request_url = config['shortener']['url']
     short_url = long_url  # default is to return same URL (ie. in case of error)
-    request = Request(req_url, headers={"User-Agent": USER_AGENT})
+    request = Request(request_url, headers={"User-Agent": USER_AGENT}, data=request_data)
     try:
         resp_file = urlopen(request)
         resp_dict = loads(resp_file.read())
-        if int(resp_dict['errorCode']) == 0:
-            short_url = resp_dict['results']['short_url']
+        if int(resp_dict['statusCode']) == 200:
+            short_url = resp_dict['url']['shortUrl']
             logger.debug(u'Shortened URL: %s', short_url)
         else:
             logger.warn(u'Error shortening URL: %s: %s',
-                resp_dict['errorCode'], resp_dict['errorMessage'])
-    except Exception as e:  # generally, urllib2.URLError
-        logger.warn(u'Exception shortening URL: %s', unicode(e), exc_info=True)
+                resp_dict['statusCode'], resp_dict['errorMessage'])
+    except Exception as exc:  # generally, urllib2.URLError
+        # read JSON response but just give up if there is no JSON in the response
+        # and log only the raw error
+        try:
+            response = exc.read()
+            reponse_data = loads(response)
+            logger.warn(
+                u'Error shortening URL: %s: %s',
+                reponse_data['statusCode'],
+                reponse_data['errorMessage'])
+        except Exception:
+            logger.warn(u'Exception shortening URL: %s', unicode(exc), exc_info=True)
+
     return short_url
 
 
