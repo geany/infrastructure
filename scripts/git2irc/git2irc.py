@@ -136,12 +136,14 @@ def shorten_url(long_url):
             "fullUrl": long_url
         }
     })
+    request_data = request_data.encode('utf-8')
     request_url = config['shortener']['url']
     short_url = long_url  # default is to return same URL (ie. in case of error)
     request = Request(request_url, headers={"User-Agent": USER_AGENT}, data=request_data)
     try:
         resp_file = urlopen(request)
-        resp_dict = loads(resp_file.read())
+        response = resp_file.read()
+        resp_dict = loads(response.decode('utf-8'))
         if int(resp_dict['statusCode']) == 200:
             short_url = resp_dict['url']['shortUrl']
             logger.debug('Shortened URL: {}'.format(short_url))
