@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cd /srv/www/download.geany.org/
+
+mv MD5SUMS MD5SUMS.old
+md5sum * >MD5SUMS
+
+diff -u MD5SUMS.old MD5SUMS
+
+# sha256sums
+mv SHA256SUMS SHA256SUMS.old
+sha256sum * >SHA256SUMS
+
+diff -u SHA256SUMS.old SHA256SUMS

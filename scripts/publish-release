@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+set -x
+
+V=$1
+
+mv geany-$V.tar.* /srv/www/download.geany.org/
+chmod 0644 /srv/www/download.geany.org/geany-$V.tar.*
+chgrp geany /srv/www/download.geany.org/geany-$V.tar.*
+
+for d in /srv/www/download.geany.org/ /srv/www/www.geany.org/files/; do
+	(cd $d && mv LATEST-IS-* LATEST-IS-$V)
+done
+
+sudo -u geany /home/geany/md5sums
+/home/geany/update-manual $V
+
