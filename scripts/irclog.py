@@ -7,6 +7,7 @@
 # License: GPLv2
 #
 
+from os.path import exists
 from html.entities import entitydefs
 from time import ctime
 import datetime
@@ -209,7 +210,7 @@ class IrcLogFormatter:
 
     # ----------------------------------------------------------------------
     def format(self):
-        self._get_contents(self._input_filename)
+        self._get_contents()
         content = self._create_table()
         if self._output_filename == '-':
             date = ''
@@ -229,9 +230,19 @@ class IrcLogFormatter:
                 output_file.write(output)
 
     # ----------------------------------------------------------------------
-    def _get_contents(self, file_name):
-        with open(file_name) as file_handle:
-            self._log_lines = list()
+    def _get_contents(self):
+        self._log_lines = list()
+        if not exists(self._input_filename):
+            # the logfile is missing after rotation and before Supybot has flushed the
+            # current log to disk, so use a dummy log message
+            entry = LogEntry()
+            entry.date = datetime.datetime.now()
+            entry.nick = 'SweetGeany'
+            entry.msg = 'Nothing has been logged yet'
+            self._log_lines.append(entry)
+            return
+
+        with open(self._input_filename) as file_handle:
             for line in file_handle:
                 match = REGEXP_MSG.match(line)
                 if match and len(match.groups()) == 8:
