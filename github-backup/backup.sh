@@ -17,10 +17,11 @@
     --pulls \
     --pull-comments \
     --pull-commits \
+    --releases \
     --wikis \
     --labels \
+    --milestones \
     --hooks \
     --organization \
-    --milestones \
     --output-directory=/home/geany/github-backup \
     geany
