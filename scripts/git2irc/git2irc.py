@@ -45,7 +45,7 @@ error. No smart checking is performed.
 '''
 
 from cgi import FieldStorage
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from copy import deepcopy
 from json import dumps, loads
 from urllib.request import Request, urlopen
@@ -74,7 +74,7 @@ def init_config(conf_filename):
     Reads the configuration file into a global dictionary.
     """
     try:
-        conf = SafeConfigParser({
+        conf = ConfigParser({
             'git': {'repositories': ''},
             'irc': {'channel': '', 'host': '', 'port': 0},
             'shortener': {'url': '', 'login': '', 'key': ''}})
