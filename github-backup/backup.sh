@@ -22,4 +22,6 @@
     --hooks \
     --organization \
     --output-directory=/home/geany/github-backup \
+    --throttle-limit=3000 \
+    --throttle-pause=30 \
     geany
