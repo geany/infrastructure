@@ -5,12 +5,10 @@
 #
 # backup almost everything from Github except the GIT repositories itself as we have git.geany.org
 
-# read the token
-. /home/geany/.github-token
 
 # start the backup
 /home/geany/github-backup/venv/bin/github-backup \
-    --token "${GITHUB_TOKEN}" \
+    --token file:///home/geany/.github-token \
     --issues \
     --issue-comments \
     --issue-events \
