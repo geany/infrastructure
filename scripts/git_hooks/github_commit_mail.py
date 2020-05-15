@@ -123,9 +123,9 @@ class CommitMailGenerator(object):
     #----------------------------------------------------------------------
     def _log_rate_limit(self, urllib_handle):
         headers = urllib_handle.info()
-        rate_limit_remaining = headers['X-RateLimit-Remaining']
-        rate_limit = headers['X-RateLimit-Limit']
-        length = headers['Content-Length']
+        rate_limit_remaining = headers.get('X-RateLimit-Remaining', '<unknown>')
+        rate_limit = headers.get('X-RateLimit-Limit', '<unknown>')
+        length = headers.get('Content-Length', '<unknown>')
         self._logger.debug(u'Github rate limits: %s/%s (%s bytes received)' %
             (rate_limit_remaining, rate_limit, length))
 
