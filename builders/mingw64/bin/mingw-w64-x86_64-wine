@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+WINEPATH="${WINEPATH};/windows/mingw64/bin" wine64 $@
