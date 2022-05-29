@@ -31,12 +31,14 @@ def run_command(repository_path, command, redirect_stdout=None, run_as=None, log
         stdout, stderr = process.communicate()
         output = ''
         if stdout:
+            stdout = stdout.decode('utf-8')
             output = f'{output}\nStdout:\n{stdout}'
             if redirect_stdout:
                 with open(redirect_stdout, 'w', encoding='utf-8') as target_file:
                     target_file.write(stdout)
 
         if stderr:
+            stderr = stderr.decode('utf-8')
             output = f'{output}\nStderr:\n{stderr}'
         if logger:
             exit_code = process.returncode
