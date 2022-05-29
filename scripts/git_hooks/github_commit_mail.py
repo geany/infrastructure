@@ -61,18 +61,17 @@ EMAIL_DIFF_TEMPLATE = '''Modified: %(filename)s
 EMAIL_RECIPIENT_MAP = {
     # repository: email address
     # geany
-    'geany/geany': 'enrico.troeger@uvena.de',
-    # ~'geany/geany': 'commits@lists.geany.org',
-    # ~'geany/talks': 'commits@lists.geany.org',
-    # ~'geany/infrastructure': 'commits@lists.geany.org',
-    # ~'geany/www.geany.org': 'commits@lists.geany.org',
-    # ~'geany/geany-themes': 'commits@lists.geany.org',
-    # ~'geany/geany-osx': 'commits@lists.geany.org',
-    # ~# plugins
-    # ~'geany/geany-plugins': 'plugins-commits@lists.geany.org',
-    # ~'geany/plugins.geany.org': 'plugins-commits@lists.geany.org',
-    # ~# newsletter
-    # ~'geany/newsletter': 'newsletter-commits@lists.geany.org',
+    'geany/geany': 'commits@lists.geany.org',
+    'geany/talks': 'commits@lists.geany.org',
+    'geany/infrastructure': 'commits@lists.geany.org',
+    'geany/www.geany.org': 'commits@lists.geany.org',
+    'geany/geany-themes': 'commits@lists.geany.org',
+    'geany/geany-osx': 'commits@lists.geany.org',
+    # plugins
+    'geany/geany-plugins': 'plugins-commits@lists.geany.org',
+    'geany/plugins.geany.org': 'plugins-commits@lists.geany.org',
+    # newsletter
+    'geany/newsletter': 'newsletter-commits@lists.geany.org',
 }
 
 
