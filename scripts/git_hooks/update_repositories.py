@@ -12,31 +12,29 @@ to update all of the Geany GIT Github mirror repositories which were marked by t
 post_commit_hook script to be out-of-date.
 '''
 
-from geany_commit_utils import setup_file_logging, update_repository
+import logging
 from os import listdir, unlink
 from os.path import exists, join
-import logging
+
+from geany_commit_utils import setup_file_logging, update_repository
+
+LOG_FILENAME = '/var/log/git_mirror.log'
+REPOSITORY_BASE_PATH = '/srv/www/git.geany.org/repos/'
+UPDATE_LOCK_FILE = '%s/_geany/.update_lock'
+UPDATE_NOTIFY_FILE = '%s/_geany/.update_required'
 
 
-LOG_FILENAME = u'/var/log/git_mirror.log'
-REPOSITORY_BASE_PATH = u'/srv/www/git.geany.org/repos/'
-UPDATE_LOCK_FILE = u'%s/_geany/.update_lock'
-UPDATE_NOTIFY_FILE = u'%s/_geany/.update_required'
-
-
-#----------------------------------------------------------------------
 def setup_logging():
-    logger = setup_file_logging('update_repositories', LOG_FILENAME)
+    logger_ = setup_file_logging('update_repositories', LOG_FILENAME)
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s %(name)s: %(levelname)s: %(message)s')
     handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    logger_.addHandler(handler)
 
-    return logger
+    return logger_
 
 
-#----------------------------------------------------------------------
 def handle_repository_update(repository):
     repository_path = join(REPOSITORY_BASE_PATH, repository)
     lock_file_path = UPDATE_LOCK_FILE % repository_path
@@ -46,20 +44,16 @@ def handle_repository_update(repository):
         return
 
     if exists(update_notify_path):
-        update_notify_file = open(update_notify_path, 'r+')
-        need_update = update_notify_file.read() == '1'
-        if need_update:
-            lock_file = open(lock_file_path, 'w')
-            update_repository(repository, repository_path, logger, run_as='www-data')
-            # remove lockfile
-            lock_file.close()
-            unlink(lock_file_path)
-            # unmark update notify
-            update_notify_file.truncate(0)
-            update_notify_file.close()
+        with open(update_notify_path, 'r+', encoding='utf-8') as update_notify_file:
+            need_update = update_notify_file.read() == '1'
+            if need_update:
+                with open(lock_file_path, 'w', encoding='utf-8'):
+                    update_repository(repository, repository_path, logger, run_as='www-data')
+                    unlink(lock_file_path)
+                # unmark update notify
+                update_notify_file.truncate(0)
 
 
-#----------------------------------------------------------------------
 def main():
     repositories = listdir(REPOSITORY_BASE_PATH)
     for repository in repositories:
@@ -70,6 +64,6 @@ if __name__ == '__main__':
     logger = setup_logging()
     try:
         main()
-    except Exception, e:
-        logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
+    except Exception as exc:
+        logger.warning('An error occurred: %s', str(exc), exc_info=True)
     logging.shutdown()

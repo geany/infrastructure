@@ -12,18 +12,17 @@ This script actually does two things:
 - send a commit mail to the mailing list
 '''
 
-
+import logging
+import logging.handlers
 from cgi import FieldStorage
-from geany_commit_utils import setup_file_logging, update_repository
 from json import loads
 from os import unlink
 from os.path import exists
+
 import github_commit_mail
-import logging
-import logging.handlers
+from geany_commit_utils import setup_file_logging, update_repository
 
-
-LOG_FILENAME = u'/var/log/git_mirror.log'
+LOG_FILENAME = '/var/log/git_mirror.log'
 VALID_UPDATE_REPOSITORIES = (
     'geany',
     'geany-plugins',
@@ -34,29 +33,27 @@ VALID_UPDATE_REPOSITORIES = (
     'geany-osx',
     'talks',
     'geany-themes')
-REPOSITORY_BASE_PATH = u'/srv/www/git.geany.org/repos/%s.git'
-UPDATE_LOCK_FILE = u'%s/_geany/.update_lock'
-UPDATE_NOTIFY_FILE = u'%s/_geany/.update_required'
+REPOSITORY_BASE_PATH = '/srv/www/git.geany.org/repos/%s.git'
+UPDATE_LOCK_FILE = '%s/_geany/.update_lock'
+UPDATE_NOTIFY_FILE = '%s/_geany/.update_required'
 # extend on demand
 LOG_EMAIL_ADDRESSES = ['enrico@geany.org']
 
 
-#----------------------------------------------------------------------
 def setup_logging():
-    logger = setup_file_logging('post_commit_hook', LOG_FILENAME)
+    logger_ = setup_file_logging('post_commit_hook', LOG_FILENAME)
     # mail
     mail_handler = logging.handlers.SMTPHandler(
-        u'localhost',
-        u'git-noreply@geany.org',
+        'localhost',
+        'git-noreply@geany.org',
         LOG_EMAIL_ADDRESSES,
-        u'Error on git_post_commit')
+        'Error on git_post_commit')
     mail_handler.setLevel(logging.WARNING)
-    logger.addHandler(mail_handler)
+    logger_.addHandler(mail_handler)
 
-    return logger
+    return logger_
 
 
-#----------------------------------------------------------------------
 def handle_repository_update(repository):
     repository_path = REPOSITORY_BASE_PATH % repository
     lock_file_path = UPDATE_LOCK_FILE % repository_path
@@ -65,19 +62,16 @@ def handle_repository_update(repository):
         # if there is currently an update process running, simply mark the repository to be updated
         # again later, a cronjob will pick it
         update_notify_path = UPDATE_NOTIFY_FILE % repository_path
-        update_notify = open(update_notify_path, 'w')
-        update_notify.write('1')
-        update_notify.close()
-        logger.warn(u'Not updating repository %s because it is locked, leaving a notify', repository)
+        with open(update_notify_path, 'w', encoding='utf-8') as update_notify:
+            update_notify.write('1')
+
+        logger.warning('Not updating repository %s because it is locked, leaving a notify', repository)
     else:
-        lock_file = open(lock_file_path, 'w')
-        update_repository(repository, repository_path, logger)
-        # remove lockfile
-        lock_file.close()
-        unlink(lock_file_path)
+        with open(lock_file_path, 'w', encoding='utf-8'):
+            update_repository(repository, repository_path, logger)
+            unlink(lock_file_path)
 
 
-#----------------------------------------------------------------------
 def process_commit_mails(content):
     user = content['repository']['owner']['name']
     repository = content['repository']['name']
@@ -90,7 +84,6 @@ def process_commit_mails(content):
     generator.generate_commit_mails()
 
 
-#----------------------------------------------------------------------
 def main():
     # parse query string
     arguments = FieldStorage(keep_blank_values=True)
@@ -109,12 +102,12 @@ def main():
 logger = setup_logging()
 try:
     main()
-except Exception, e:
-    logger.warn(u'An error occurred: %s', unicode(e), exc_info=True)
+except Exception as exc:
+    logger.warning('An error occurred: %s', str(exc), exc_info=True)
 
 
-print 'Content-type: text/html'
-print
+print('Content-type: text/html')
+print()
 
 
 logging.shutdown()
