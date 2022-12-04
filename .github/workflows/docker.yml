@@ -1,0 +1,49 @@
+#
+# Copyright:	2022, The Geany contributors
+# License:		GNU GPL v2 or later
+
+name: Build CI Docker Images
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Friday
+    - cron: '34 5 * * FRI'
+
+# cancel already running builds of the same branch or pull request
+concurrency:
+  group: ci-${{ github.head_ref }} || concat(${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mingw64:
+    name: Build Docker image for mingw64 CI builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+
+    env:
+      DOCKER_REGISTRY:          "ghcr.io"
+      DOCKER_IMAGE_NAME:        "geany-mingw64-ci"
+      DOCKER_IMAGE_TAG:         "ghcr.io/geany/geany-mingw64-ci:latest"
+
+    steps:
+      - name: Checkout Build Scripts
+        uses: actions/checkout@v3
+
+      - name: Log In To The Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build And Push Docker Image
+        run: |
+          cd builders
+          bash start_build.sh --log-to-stdout --mingw64 --rebuild-images
+          docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ env.DOCKER_IMAGE_TAG }}
+          docker push ${{ env.DOCKER_IMAGE_TAG }}

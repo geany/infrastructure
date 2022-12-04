@@ -50,7 +50,17 @@ If you want to add or remove a repository maintained by these scripts, follow th
   * Open http://git.geany.org/ in your browser and check whether the new repository is visible
     and has files.
 
+
+CI / Nightly-Builders
+=====================
+
+The `builders` directory contains Dockerfiles and scripts to create Debian packages
+as well as a cross-compiled Windows installer for Geany and Geany-Plugins.
+These scripts are used for the nightly builds, for details see
+[builders/README.md](builders/README.md).
+
+
 License
-===============
+=======
 Unless stated otherwise all code in this repository is licensed of under the terms
 of the GNU General Public License version 2 (see COPYING in this repository).
