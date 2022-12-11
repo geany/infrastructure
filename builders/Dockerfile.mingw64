@@ -8,59 +8,11 @@
 # and create a ready-use installer.
 # For more details, see build_mingw64_geany.sh where this image is used.
 #
-# Intermediate container for building pacman
-FROM debian:bullseye as build-pacman
 
-ENV PACMAN_VERSION=6.0.1
-ENV PACMAN_SHA256="0db61456e56aa49e260e891c0b025be210319e62b15521f29d3e93b00d3bf731"
+FROM debian:bullseye
+
 ENV MSYS2_KEYRING_PKG="msys2-keyring-1~20221024-1-any.pkg.tar.zst"
 ENV MSYS2_KEYRING_PKG_SHA256="e90fb4413f6056dbc8b2df9eac670924aa2851151bc97569e7df12c928acc209"
-
-RUN set -ex && \
-    apt-get update && \
-    apt-get install --no-install-recommends --assume-yes \
-    build-essential meson wget xz-utils zstd gnupg2 file zstd ca-certificates \
-    pkg-config m4 libarchive-dev libssl-dev libcurl4-gnutls-dev libgpgme-dev \
-    python3-setuptools
-
-# compile Pacman
-RUN set -ex && \
-    wget --no-verbose https://sources.archlinux.org/other/pacman/pacman-${PACMAN_VERSION}.tar.xz && \
-    echo "${PACMAN_SHA256} *pacman-${PACMAN_VERSION}.tar.xz" | sha256sum --check --strict - && \
-    tar xf pacman-${PACMAN_VERSION}.tar.xz && \
-    cd /pacman-${PACMAN_VERSION} && \
-    meson \
-        --prefix /usr/local \
-        --sysconfdir=/windows/etc \
-        --localstatedir=/windows/var \
-        --buildtype release \
-        --strip \
-        -Dscriptlet-shell='/bin/bash' \
-        -Ddoc='disabled' \
-        -Ddoxygen='disabled' \
-        -Ddoc='disabled' \
-        -Di18n=false \
-        build && \
-    ninja -C build && \
-    ninja -C build install && \
-    ldconfig
-
-COPY mingw64/etc/ /windows/etc/
-
-# setup pacman-key
-RUN set -ex && \
-    # download MSYS2 keyring
-    mkdir -p /usr/local/share/pacman/keyrings/ && \
-    wget --no-verbose "https://repo.msys2.org/msys/x86_64/${MSYS2_KEYRING_PKG}" && \
-    echo "${MSYS2_KEYRING_PKG_SHA256} *${MSYS2_KEYRING_PKG}" | sha256sum --check --strict - && \
-    tar -x -C /usr/local/share/pacman/keyrings/ -f "${MSYS2_KEYRING_PKG}" --strip-components 4 usr && \
-    # initialize keyring
-    pacman-key --init && \
-    pacman-key --populate msys2
-
-
-# Main image
-FROM debian:bullseye
 
 LABEL org.opencontainers.image.title="Geany-Mingw-w64-CI"
 LABEL org.opencontainers.image.description="Build image for Geany CI to support automatic building of Windows installers."
@@ -72,6 +24,8 @@ LABEL org.opencontainers.image.licenses="GPL-2.0"
 # install native tools and libraries
 RUN set -ex && \
     dpkg --add-architecture i386 && \
+    # add Debian backports for "pacman" package manager, can be removed after updating this image to Debian Bookworm
+    echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list && \
     apt-get update && \
     apt-get install --no-install-recommends --assume-yes \
     # libraries \
@@ -79,9 +33,11 @@ RUN set -ex && \
     # common useful utilities \
     wget curl less nano git gnupg2 file ca-certificates \
     zip unzip xz-utils zstd \
+    # pacman package manager \
+    pacman-package-manager archlinux-keyring makepkg \
     # build tools \
     build-essential automake autoconf autopoint gettext libtool check cppcheck \
-    # genay-plugins autogen.sh requirements
+    # geany-plugins autogen.sh requirements
     intltool libglib2.0-dev \
     # mingw-w64 \
     gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools \
@@ -93,19 +49,26 @@ RUN set -ex && \
     python3-lxml python3-docutils
 
 
-# copy pacman and scripts
-COPY --from=build-pacman /windows /windows
-COPY --from=build-pacman /usr/local /usr/local
+# copy scripts
 COPY mingw64/bin/ /usr/local/bin/
-RUN mkdir /build
+COPY mingw64/etc/ /etc/
+RUN mkdir /build /windows
 
 WORKDIR /build
 
 # start wine to initially create config directory
-RUN /usr/local/bin/mingw-w64-i686-wine hostname.exe && \
+RUN set -e && \
+    /usr/local/bin/mingw-w64-i686-wine hostname.exe && \
     /usr/local/bin/mingw-w64-x86_64-wine hostname.exe && \
+    # download MSYS2 keyring
+    wget --no-verbose "https://repo.msys2.org/msys/x86_64/${MSYS2_KEYRING_PKG}" && \
+    echo "${MSYS2_KEYRING_PKG_SHA256} *${MSYS2_KEYRING_PKG}" | sha256sum --check --strict - && \
+    tar -x -C /usr/share/keyrings/ -f "${MSYS2_KEYRING_PKG}" --strip-components 4 usr && \
+    rm "${MSYS2_KEYRING_PKG}" && \
+    # initialize keyring
+    pacman-key --init && \
+    pacman-key --populate msys2 && \
     # install GTK3 and all its dependencies
-    ldconfig && \
     pacman --noconfirm -Sy mingw-w64-x86_64-gtk3 && \
     # cleanup
     apt-get clean && \
