@@ -77,7 +77,7 @@ RUN set -ex && \
     # libraries \
     libcurl3-gnutls libgpgme11 libarchive13 libssl1.1 \
     # common useful utilities \
-    wget curl less nano git gnupg2 file ca-certificates dos2unix \
+    wget curl less nano git gnupg2 file ca-certificates \
     zip unzip xz-utils zstd \
     # build tools \
     build-essential automake autoconf autopoint gettext libtool check cppcheck \
