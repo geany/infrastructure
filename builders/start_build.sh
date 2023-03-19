@@ -98,6 +98,7 @@ build_mingw64() {
 				--rm \
 				--env=GITHUB_PULL_REQUEST="${GITHUB_PULL_REQUEST}" \
 				--env=CI="${CI}" \
+				--env=JOBS="${JOBS}" \
 				${source_volume} \
 				--volume "${PWD}/scripts:/scripts/" \
 				--volume "${PWD}/certificates/:/certificates/" \
@@ -119,6 +120,7 @@ build_mingw64() {
 				--rm \
 				--env=GITHUB_PULL_REQUEST="${GITHUB_PULL_REQUEST}" \
 				--env=CI="${CI}" \
+				--env=JOBS="${JOBS}" \
 				${source_volume} \
 				--volume "${PWD}/scripts:/scripts/" \
 				--volume "${PWD}/certificates/:/certificates/" \
