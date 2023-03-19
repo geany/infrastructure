@@ -1,0 +1,30 @@
+#
+# Copyright:	2023, The Geany contributors
+# License:		GNU GPL v2 or later
+
+name: Build CI Docker Images
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Friday
+    - cron: '34 7 * * FRI'
+
+jobs:
+  cleanup:
+    name: Remove all but the latest $PACKAGES_TO_KEEP untagged versions of the Geany CI Docker image
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+
+    env:
+      PACKAGES_TO_KEEP:     5
+      DOCKER_IMAGE_NAME:    "geany-mingw64-ci"
+
+    steps:
+      - uses: actions/delete-package-versions@v4
+        with:
+          package-name: ${{ env.DOCKER_IMAGE_NAME }}
+          package-type: 'container'
+          min-versions-to-keep: ${{ env.PACKAGES_TO_KEEP }}
+          delete-only-untagged-versions: 'true'
