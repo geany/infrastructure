@@ -2,7 +2,7 @@
 # Copyright:	2023, The Geany contributors
 # License:		GNU GPL v2 or later
 
-name: Build CI Docker Images
+name: Clean up old CI Docker Images
 
 on:
   workflow_dispatch:
