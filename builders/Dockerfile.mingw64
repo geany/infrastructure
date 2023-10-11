@@ -24,6 +24,9 @@ LABEL org.opencontainers.image.licenses="GPL-2.0"
 
 # install native tools and libraries
 RUN set -ex && \
+    # ensure /etc/mtab is available, pacman depends on it
+    test -e /etc/mtab || ln -s /proc/mounts /etc/mtab && \
+    # add i386 architecture for mingw64
     dpkg --add-architecture i386 && \
     # add Debian backports for "pacman" package manager, can be removed after updating this image to Debian Bookworm
     echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list && \
