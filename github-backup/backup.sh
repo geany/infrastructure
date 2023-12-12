@@ -8,6 +8,7 @@
 
 # start the backup
 /home/geany/github-backup/venv/bin/github-backup \
+    --quiet \
     --token file:///home/geany/.github-token \
     --issues \
     --issue-comments \
