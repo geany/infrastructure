@@ -22,7 +22,7 @@ jobs:
       DOCKER_IMAGE_NAME:    "geany-mingw64-ci"
 
     steps:
-      - uses: actions/delete-package-versions@v4
+      - uses: actions/delete-package-versions@v5
         with:
           package-name: ${{ env.DOCKER_IMAGE_NAME }}
           package-type: 'container'
