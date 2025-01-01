@@ -50,13 +50,7 @@ RUN set -ex && \
     # install NSIS and exiftool to inspect binary metadata
     nsis libimage-exiftool-perl osslsigncode \
     # Geany build dependencies \
-    python3-lxml python3-docutils && \
-    # Use the "posix" variant of the mingw64 cross compiler to have support for recent C++ features
-    # like "std:future", see
-    # https://salsa.debian.org/mingw-w64-team/gcc-mingw-w64/-/blob/master/debian/gcc-mingw-w64-base.README.Debian
-    # and https://sourceforge.net/p/mingw-w64/bugs/959/ for details.
-    update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix && \
-    update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+    python3-lxml python3-docutils
 
 
 # copy scripts
