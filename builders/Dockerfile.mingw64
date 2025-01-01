@@ -9,7 +9,7 @@
 # For more details, see build_mingw64_geany.sh where this image is used.
 #
 
-FROM debian:bullseye
+FROM debian:trixie
 
 # Find the latest version on https://packages.msys2.org/package/msys2-keyring
 ENV MSYS2_KEYRING_PKG="msys2-keyring-1~20230703-1-any.pkg.tar.zst"
@@ -33,7 +33,7 @@ RUN set -ex && \
     apt-get update && \
     apt-get install --no-install-recommends --assume-yes \
     # libraries \
-    libcurl3-gnutls libgpgme11 libarchive13 libssl1.1 \
+    libcurl3t64-gnutls libgpgme11t64 libarchive13t64 \
     # common useful utilities \
     wget curl less nano git gnupg2 file ca-certificates \
     zip unzip xz-utils zstd \

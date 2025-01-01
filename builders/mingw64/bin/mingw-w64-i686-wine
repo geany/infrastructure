@@ -1,4 +1,4 @@
 #!/bin/sh -e
 
-WINEPATH="${WINEPATH};/windows/mingw32/bin" wine $@
+WINEPATH="${WINEPATH};/windows/mingw32/bin" /usr/lib/wine/wine $@
 
