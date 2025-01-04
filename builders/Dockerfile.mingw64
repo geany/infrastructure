@@ -82,3 +82,5 @@ RUN set -e && \
         /windows/mingw64/share/icons \
         /windows/mingw64/share/locale \
         /windows/mingw64/share/doc
+
+ENV PATH=${PATH}:/windows/mingw64/bin
