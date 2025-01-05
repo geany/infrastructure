@@ -26,8 +26,6 @@ LABEL org.opencontainers.image.licenses="GPL-2.0"
 RUN set -ex && \
     # ensure /etc/mtab is available, pacman depends on it
     test -e /etc/mtab || ln -s /proc/mounts /etc/mtab && \
-    # add i386 architecture for mingw64
-    dpkg --add-architecture i386 && \
     # add Debian backports for "pacman" package manager, can be removed after updating this image to Debian Bookworm
     echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list && \
     apt-get update && \
@@ -44,7 +42,7 @@ RUN set -ex && \
     # mingw-w64 \
     gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools \
     # install wine to test installer and created binaries
-    wine wine32 wine64 \
+    wine wine64 \
     # install NSIS and exiftool to inspect binary metadata
     nsis libimage-exiftool-perl osslsigncode \
     # Geany build dependencies \
@@ -60,7 +58,6 @@ WORKDIR /build
 
 # start wine to initially create config directory
 RUN set -e && \
-    /usr/local/bin/mingw-w64-i686-wine hostname.exe && \
     /usr/local/bin/mingw-w64-x86_64-wine hostname.exe && \
     # download MSYS2 keyring
     wget --no-verbose "https://repo.msys2.org/msys/x86_64/${MSYS2_KEYRING_PKG}" && \
