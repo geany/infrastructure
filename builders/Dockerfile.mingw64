@@ -12,8 +12,8 @@
 FROM debian:trixie
 
 # Find the latest version on https://packages.msys2.org/package/msys2-keyring
-ENV MSYS2_KEYRING_PKG="msys2-keyring-1~20230703-1-any.pkg.tar.zst"
-ENV MSYS2_KEYRING_PKG_SHA256="368f7b0a5434feadb512656134f4e721194c258b87b87f7139a15c1c5a51ad5c"
+ENV MSYS2_KEYRING_PKG="msys2-keyring-1~20250619-1-any.pkg.tar.zst"
+ENV MSYS2_KEYRING_PKG_SHA256="ba293277b81986234d71e1312fdf1e441e68a57efe0bc03bc2e15b177c521245"
 
 LABEL org.opencontainers.image.title="Geany-Mingw-w64-CI"
 LABEL org.opencontainers.image.description="Build image for Geany CI to support automatic building of Windows installers."
