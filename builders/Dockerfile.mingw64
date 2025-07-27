@@ -28,8 +28,6 @@ RUN set -ex && \
     test -e /etc/mtab || ln -s /proc/mounts /etc/mtab && \
     # add i386 architecture for mingw64
     dpkg --add-architecture i386 && \
-    # add Debian backports for "pacman" package manager, can be removed after updating this image to Debian Bookworm
-    echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list && \
     apt-get update && \
     apt-get install --no-install-recommends --assume-yes \
     # common useful utilities \
