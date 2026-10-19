@@ -19,7 +19,7 @@ jobs:
 
     env:
       PACKAGES_TO_KEEP:     5
-      DOCKER_IMAGE_NAME:    "geany-mingw64-ci"
+      DOCKER_IMAGE_NAME:    "geany-mingw64ucrt-ci"
 
     steps:
       - uses: actions/delete-package-versions@v5

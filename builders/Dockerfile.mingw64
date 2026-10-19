@@ -40,7 +40,7 @@ RUN set -ex && \
     # geany-plugins autogen.sh requirements
     intltool libglib2.0-dev \
     # mingw-w64 \
-    gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64-x86-64-dev mingw-w64-tools \
+    gcc-mingw-w64-ucrt64 g++-mingw-w64-ucrt64 mingw-w64-ucrt64-dev mingw-w64-tools \
     # install wine to test installer and created binaries
     wine wine32 wine64 \
     # install NSIS and exiftool to inspect binary metadata
@@ -59,7 +59,7 @@ WORKDIR /build
 # start wine to initially create config directory
 RUN set -e && \
     /usr/local/bin/mingw-w64-i686-wine hostname.exe && \
-    /usr/local/bin/mingw-w64-x86_64-wine hostname.exe && \
+    /usr/local/bin/mingw-w64-ucrt-x86_64-wine hostname.exe && \
     # download MSYS2 keyring
     wget --no-verbose "https://repo.msys2.org/msys/x86_64/${MSYS2_KEYRING_PKG}" && \
     echo "${MSYS2_KEYRING_PKG_SHA256} *${MSYS2_KEYRING_PKG}" | sha256sum --check --strict - && \
@@ -69,7 +69,7 @@ RUN set -e && \
     pacman-key --init && \
     pacman-key --populate msys2 && \
     # install GTK3 and all its dependencies
-    pacman --noconfirm -Sy mingw-w64-x86_64-gtk3 && \
+    pacman --noconfirm -Sy mingw-w64-ucrt-x86_64-gtk3 && \
     # cleanup
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
@@ -77,8 +77,8 @@ RUN set -e && \
     rm -r /usr/share/doc \
         /usr/share/locale \
         /usr/share/man \
-        /windows/mingw64/share/icons \
-        /windows/mingw64/share/locale \
-        /windows/mingw64/share/doc
+        /windows/ucrt64/share/icons \
+        /windows/ucrt64/share/locale \
+        /windows/ucrt64/share/doc
 
-ENV PATH=${PATH}:/windows/mingw64/bin
+ENV PATH=${PATH}:/windows/ucrt64/bin
