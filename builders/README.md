@@ -88,7 +88,7 @@ for cross-compiling to mingw64 included. Additionally, the image contains a self
 Pacman package manager to install packages from the MSYS2 repositories.
 
 A Github Action workflow is configured in this repository to build and push the image
-to the Github Docker image registry as ghcr.io/geany/geany-mingw64-ci:latest. The workflow
+to the Github Docker image registry as ghcr.io/geany/geany-mingw64ucrt-ci:latest. The workflow
 is triggered once a week automatically.
 
 ### Code sign certificate
