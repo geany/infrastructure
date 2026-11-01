@@ -76,7 +76,7 @@ rebuild_image() {
 
 
 build_mingw64() {
-	IMAGE_NAME_WINDOWS="geany-mingw64-ci"
+	IMAGE_NAME_WINDOWS="geany-mingw64ucrt-ci"
 	MINGW64_OUTPUT_DIRECTORY=${BASE_OUTPUT_DIRECTORY}/mingw64
 	LOGFILE_MINGW64_GEANY=${MINGW64_OUTPUT_DIRECTORY}/build_mingw64_geany_$(date '+%Y_%m_%d_%H_%M_%S').log
 	LOGFILE_MINGW64_GEANY_PLUGINS=${MINGW64_OUTPUT_DIRECTORY}/build_mingw64_geany_plugins_$(date '+%Y_%m_%d_%H_%M_%S').log
