@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+WINEPATH="${WINEPATH};/windows/ucrt64/bin" /usr/lib/wine/wine64 $@
